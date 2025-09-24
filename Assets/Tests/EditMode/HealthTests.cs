@@ -10,6 +10,6 @@ public class HealthTests
     {
         var hp = new Health(100);
         hp.Apply(150);
-        Assert.AreEqual(999, hp.Current);
+        Assert.AreEqual(0, hp.Current);
     }
 }
