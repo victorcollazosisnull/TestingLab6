@@ -1,0 +1,51 @@
+name: Unity CI
+on: [push, pull_request]
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_VERSION: 2022.3.21f1 # ← Pon la versión real de tu proyecto
+      PROJECT_PATH: . # ← Cambia si tu proyecto está en una subcarpeta
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PROJECT_PATH }}/Library
+          key: Lib-${{ runner.os }}-${{ hashFiles('**/Packages/manifest.json') }}
+          restore-keys: Lib-${{ runner.os }}-
+
+      - name: Activate Unity
+        uses: game-ci/unity-activate@v2
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
+          activationMode: manual
+          unityLicense: ${{ secrets.UNITY_LICENSE }}
+
+      - name: Run Tests (Edit + Play)
+        uses: game-ci/unity-test-runner@v4
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: all
+          artifactsPath: TestResults
+
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v4
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: WebGL
+          buildsPath: builds
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebGL+Tests
+          path: |
+            builds/WebGL
+            TestResults
