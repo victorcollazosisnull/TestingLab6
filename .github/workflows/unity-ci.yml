@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-      UNITY_VERSION: 2022.3.21f1 # ← Pon la versión real de tu proyecto
+      UNITY_VERSION: 6000.0.56f1 # ← Pon la versión real de tu proyecto
       PROJECT_PATH: . # ← Cambia si tu proyecto está en una subcarpeta
     steps:
       - name: Checkout
